@@ -143,7 +143,7 @@ namespace ofxZED
 		ofMatrix4x4 getTrackedPose() const { return toOf(pose); }
 		const sl::Objects& getObjectDetectionResult() const { return objDetResult; }
 
-		void setSensingMode(sl::SENSING_MODE mode);
+		//void setSensingMode(sl::SENSING_MODE mode);
 		sl::RuntimeParameters& getRuntimeParams() { return rt; }
 		sl::ObjectDetectionRuntimeParameters& getObjectDetectionRuntimeParams() { return objDetRtParams; }
 		void setEnableUpdateColorImage(bool b) { bUseColorImage = b; }
@@ -209,7 +209,7 @@ namespace ofxZED
 		bool handleZedResponse(sl::ERROR_CODE zederr) {
 			auto success = zederr == sl::ERROR_CODE::SUCCESS;
 			if (!success) {
-				ofLog() << "ERROR: " << sl::errorCode2str(zederr).c_str();
+				ofLog() << "ERROR: " << sl::toVerbose(zederr).c_str();
 			}
 			return success;
 		}

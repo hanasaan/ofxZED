@@ -37,7 +37,8 @@ namespace ofxZED
 			if (bUseDepthImage)
 			{
 				rt.enable_depth = true;
-				rt.sensing_mode = sl::SENSING_MODE::FILL;
+				rt.enable_fill_mode = true;
+				//rt.sensing_mode = sl::SENSING_MODE::FILL;
 			}
 			else if (bUseColorImage)
 			{
@@ -85,8 +86,8 @@ namespace ofxZED
 				ofLog() << "ZED initialized." << endl;
 			}
 
-			zedWidth = zed->getCameraInformation().camera_resolution.width;
-			zedHeight = zed->getCameraInformation().camera_resolution.height;
+			zedWidth = zed->getCameraInformation().camera_configuration.resolution.width;
+			zedHeight = zed->getCameraInformation().camera_configuration.resolution.height;
 
 			ofLog() << "Resolution: " << zedWidth << ", " << zedHeight << endl;
 			ofLog() << "FPS: " << getCurrentFPS() << endl;
@@ -213,10 +214,10 @@ namespace ofxZED
 		return zed->getCurrentFPS();
 	}
 
-	void Camera::setSensingMode(sl::SENSING_MODE mode)
-	{
-		rt.sensing_mode = mode;
-	}
+	//void Camera::setSensingMode(sl::SENSING_MODE mode)
+	//{
+	//	rt.sensing_mode = mode;
+	//}
 
 	void Camera::debugDrawObjectDetectionResult2D() const
 	{
@@ -240,28 +241,28 @@ namespace ofxZED
 				ofPopStyle();
 			}
 
-			if (object.keypoint_2d.size() == 18) {
-				ofPushStyle();
-				ofSetColor(255, 0, 0);
-				ofSetLineWidth(3);
-				for (int i = 0; i < BODY18_CONNECTIONS.size(); i += 2) {
-					auto idx1 = BODY18_CONNECTIONS[i];
-					auto idx2 = BODY18_CONNECTIONS[i+1];
-					auto conf1 = object.keypoint_confidence[idx1];
-					auto conf2 = object.keypoint_confidence[idx2];
-					auto pt1 = toOf(object.keypoint_2d[idx1]);
-					auto pt2 = toOf(object.keypoint_2d[idx2]);
-					if (conf1 > 0.2 && conf2 > 0.2 && pt1.lengthSquared() > 0.0 && pt2.lengthSquared() > 0.0) {
-						ofDrawLine(pt1, pt2);
-					}
-				}
-				ofPopStyle();
-			}
-			ofPushStyle();
-			ofSetColor(128, 255, 0);
-			for (const auto& kp2d : object.keypoint_2d) {
-				ofDrawSphere(kp2d.x, kp2d.y, 3);
-			}
+			//if (object.size() == 18) {
+			//	ofPushStyle();
+			//	ofSetColor(255, 0, 0);
+			//	ofSetLineWidth(3);
+			//	for (int i = 0; i < BODY18_CONNECTIONS.size(); i += 2) {
+			//		auto idx1 = BODY18_CONNECTIONS[i];
+			//		auto idx2 = BODY18_CONNECTIONS[i+1];
+			//		auto conf1 = object.keypoint_confidence[idx1];
+			//		auto conf2 = object.keypoint_confidence[idx2];
+			//		auto pt1 = toOf(object.keypoint_2d[idx1]);
+			//		auto pt2 = toOf(object.keypoint_2d[idx2]);
+			//		if (conf1 > 0.2 && conf2 > 0.2 && pt1.lengthSquared() > 0.0 && pt2.lengthSquared() > 0.0) {
+			//			ofDrawLine(pt1, pt2);
+			//		}
+			//	}
+			//	ofPopStyle();
+			//}
+			//ofPushStyle();
+			//ofSetColor(128, 255, 0);
+			//for (const auto& kp2d : object.keypoint_2d) {
+			//	ofDrawSphere(kp2d.x, kp2d.y, 3);
+			//}
 			ofPopStyle();
 
 		}
@@ -270,32 +271,32 @@ namespace ofxZED
 	void Camera::debugDrawObjectDetectionResult3D() const
 	{
 		ofPushStyle();
-		ofSetColor(255, 0, 255);
-		for (const auto& object : this->objDetResult.object_list) {
-			if (object.keypoint.size() == 18) {
-				ofPushStyle();
-				ofSetColor(255, 0, 255);
-				ofSetLineWidth(3);
-				for (int i = 0; i < BODY18_CONNECTIONS.size(); i += 2) {
-					auto idx1 = BODY18_CONNECTIONS[i];
-					auto idx2 = BODY18_CONNECTIONS[i + 1];
-					auto conf1 = object.keypoint_confidence[idx1];
-					auto conf2 = object.keypoint_confidence[idx2];
-					auto pt1 = toOf(object.keypoint[idx1]);
-					auto pt2 = toOf(object.keypoint[idx2]);
-					if (conf1 > 0.2 && conf2 > 0.2 && pt1.lengthSquared() > 0.0 && pt2.lengthSquared() > 0.0) {
-						ofDrawLine(pt1, pt2);
-					}
-				}
-				ofPopStyle();
-			}
-			ofPushStyle();
-			ofSetColor(0, 255, 255);
-			for (const auto& kp : object.keypoint) {
-				ofDrawSphere(toOf(kp), 0.01);
-			}
-			ofPopStyle();
-		}
+		//ofSetColor(255, 0, 255);
+		//for (const auto& object : this->objDetResult.object_list) {
+		//	if (object.keypoint.size() == 18) {
+		//		ofPushStyle();
+		//		ofSetColor(255, 0, 255);
+		//		ofSetLineWidth(3);
+		//		for (int i = 0; i < BODY18_CONNECTIONS.size(); i += 2) {
+		//			auto idx1 = BODY18_CONNECTIONS[i];
+		//			auto idx2 = BODY18_CONNECTIONS[i + 1];
+		//			auto conf1 = object.keypoint_confidence[idx1];
+		//			auto conf2 = object.keypoint_confidence[idx2];
+		//			auto pt1 = toOf(object.keypoint[idx1]);
+		//			auto pt2 = toOf(object.keypoint[idx2]);
+		//			if (conf1 > 0.2 && conf2 > 0.2 && pt1.lengthSquared() > 0.0 && pt2.lengthSquared() > 0.0) {
+		//				ofDrawLine(pt1, pt2);
+		//			}
+		//		}
+		//		ofPopStyle();
+		//	}
+		//	ofPushStyle();
+		//	ofSetColor(0, 255, 255);
+		//	for (const auto& kp : object.keypoint) {
+		//		ofDrawSphere(toOf(kp), 0.01);
+		//	}
+		//	ofPopStyle();
+		//}
 		ofPopStyle();
 	}
 
@@ -373,7 +374,7 @@ namespace ofxZED
 							depthLeftTexture.loadData(depthLeftPixels);
 						}
 						else {
-							ofLogError() << sl::errorCode2str(ret).c_str() << endl;
+							ofLogError() << sl::toVerbose(ret).c_str() << endl;
 						}
 					}
 					if (bEnableRightSideMeasure) {
@@ -383,7 +384,7 @@ namespace ofxZED
 							depthRightTexture.loadData(depthRightPixels);
 						}
 						else {
-							ofLogError() << sl::errorCode2str(ret).c_str() << endl;
+							ofLogError() << sl::toVerbose(ret).c_str() << endl;
 						}
 					}
 				}

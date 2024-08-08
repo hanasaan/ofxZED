@@ -9,8 +9,8 @@ void main()
 {
 	vec4 col = texture2DRect(tex, gl_TexCoord[0].xy);
 	float value = col.r;
-	float low1 = 0.1;
-	float high1 = 20.0;
+	float low1 = 0.3;
+	float high1 = 6.0;
 	float low2 = 1.0;
 	float high2 = 0.0;
 	float d = clamp(low2 + (value - low1) * (high2 - low2) / (high1 - low1), 0.0, 1.0);
@@ -36,9 +36,9 @@ void ofApp::setup()
 	//zed.init(true, true, false, false, 0, sl::DEPTH_MODE::PERFORMANCE, sl::RESOLUTION::HD720, 0.0);
 	//zed.init(true, true, false, false, 0, sl::DEPTH_MODE::NONE, sl::RESOLUTION::VGA, 100.0);
 	sl::InitParameters init_params;
-	init_params.camera_resolution = sl::RESOLUTION::HD720;
-	init_params.camera_fps = 60;
-	init_params.depth_mode = sl::DEPTH_MODE::PERFORMANCE;
+	init_params.camera_resolution = sl::RESOLUTION::HD1080;
+	init_params.camera_fps = 30;
+	init_params.depth_mode = sl::DEPTH_MODE::NEURAL;
 	init_params.coordinate_units = sl::UNIT::METER;
 	init_params.coordinate_system = sl::COORDINATE_SYSTEM::RIGHT_HANDED_Y_UP;
 	init_params.input.setFromCameraID(0);
@@ -47,18 +47,18 @@ void ofApp::setup()
 
 	sl::RuntimeParameters runtime_params;
 	runtime_params.enable_depth = true;
-	runtime_params.sensing_mode = sl::SENSING_MODE::FILL;
-	if (zed.open(init_params, runtime_params)) {
-		sl::PositionalTrackingParameters pt_params;
-		pt_params.set_as_static = true;
-		zed.enablePositionalTracking(pt_params);
+	//if (zed.open(init_params, runtime_params)) {
+	//	sl::PositionalTrackingParameters pt_params;
+	//	pt_params.set_as_static = true;
+	//	zed.enablePositionalTracking(pt_params);
 
-		sl::ObjectDetectionParameters obj_det_params;
-		obj_det_params.detection_model = sl::DETECTION_MODEL::HUMAN_BODY_ACCURATE;
-		obj_det_params.body_format = sl::BODY_FORMAT::POSE_18;
-		sl::ObjectDetectionRuntimeParameters obj_det_params_rt;
-		zed.enableObjectDetection(obj_det_params, obj_det_params_rt);
-	}
+	//	sl::ObjectDetectionParameters obj_det_params;
+	//	obj_det_params.detection_model = sl::DETECTION_MODEL::HUMAN_BODY_ACCURATE;
+	//	obj_det_params.body_format = sl::BODY_FORMAT::POSE_18;
+	//	sl::ObjectDetectionRuntimeParameters obj_det_params_rt;
+	//	zed.enableObjectDetection(obj_det_params, obj_det_params_rt);
+	//}
+	zed.open(init_params, runtime_params);
 
 	depthShader.setupShaderFromSource(GL_FRAGMENT_SHADER, depthFragmentShader);
 	depthShader.linkProgram();
@@ -76,15 +76,16 @@ void ofApp::update()
 //--------------------------------------------------------------
 void ofApp::draw()
 {
+	depthShader.begin();
+	zed.getDepthLeftTexture().draw(0, 0);
+	zed.getDepthRightTexture().draw(zed.zedWidth, 0);
+	depthShader.end();
+
 	colorShader.begin();
-	zed.getColorLeftTexture().draw(0, 0);
-	zed.getColorRightTexture().draw(zed.zedWidth, 0);
+	zed.getColorLeftTexture().draw(0, zed.zedHeight);
+	zed.getColorRightTexture().draw(zed.zedWidth, zed.zedHeight);
 	colorShader.end();
 
-	depthShader.begin();
-	zed.getDepthLeftTexture().draw(0, zed.zedHeight);
-	zed.getDepthRightTexture().draw(zed.zedWidth, zed.zedHeight);
-	depthShader.end();
 
 	zed.debugDrawObjectDetectionResult2D();
 
@@ -119,12 +120,6 @@ void ofApp::draw()
 void ofApp::keyPressed(int key){
 	if (key == 'd') {
 		zed.disableObjectDetection();
-	}
-	if (key == 'e') {
-		sl::ObjectDetectionParameters obj_det_params;
-		obj_det_params.detection_model = sl::DETECTION_MODEL::HUMAN_BODY_FAST;
-		sl::ObjectDetectionRuntimeParameters obj_det_params_rt;
-		zed.enableObjectDetection(obj_det_params, obj_det_params_rt);
 	}
 }
 
